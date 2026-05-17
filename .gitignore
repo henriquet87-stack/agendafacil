@@ -1,0 +1,4 @@
+node_modules/
+backend/agendamento.db
+backend/agendamento.db-shm
+backend/agendamento.db-wal
