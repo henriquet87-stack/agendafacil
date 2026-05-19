@@ -77,8 +77,16 @@ function badgeStatus(status) {
 }
 
 // ===== DASHBOARD =====
+function dataHoje() {
+  const d = new Date();
+  const ano = d.getFullYear();
+  const mes = String(d.getMonth() + 1).padStart(2, '0');
+  const dia = String(d.getDate()).padStart(2, '0');
+  return `${ano}-${mes}-${dia}`;
+}
+
 async function carregarDashboard() {
-  const hoje = new Date().toISOString().split('T')[0];
+  const hoje = dataHoje();
 
   document.getElementById('dash-date').textContent =
     new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
