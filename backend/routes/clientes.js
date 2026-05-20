@@ -1,23 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../database');
+const { db } = require('../database');
 
-// GET /api/clientes — lista todos os clientes
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const clientes = db.prepare(`
-      SELECT * FROM clientes ORDER BY nome ASC
-    `).all();
+    const clientes = await db('clientes').orderBy('nome');
     res.json(clientes);
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao buscar clientes.' });
   }
 });
 
-// GET /api/clientes/:id — busca um cliente pelo ID
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const cliente = db.prepare('SELECT * FROM clientes WHERE id = ?').get(req.params.id);
+    const cliente = await db('clientes').where({ id: req.params.id }).first();
     if (!cliente) return res.status(404).json({ erro: 'Cliente não encontrado.' });
     res.json(cliente);
   } catch (err) {
@@ -25,56 +21,40 @@ router.get('/:id', (req, res) => {
   }
 });
 
-// POST /api/clientes — cadastra um novo cliente
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { nome, telefone, email } = req.body;
-
-  if (!nome || !telefone) {
-    return res.status(400).json({ erro: 'Nome e telefone são obrigatórios.' });
-  }
-
+  if (!nome || !telefone) return res.status(400).json({ erro: 'Nome e telefone são obrigatórios.' });
   try {
-    const result = db.prepare(`
-      INSERT INTO clientes (nome, telefone, email) VALUES (?, ?, ?)
-    `).run(nome.trim(), telefone.trim(), email?.trim() || null);
-
-    const novoCliente = db.prepare('SELECT * FROM clientes WHERE id = ?').get(result.lastInsertRowid);
-    res.status(201).json(novoCliente);
+    const [novo] = await db('clientes')
+      .insert({ nome: nome.trim(), telefone: telefone.trim(), email: email?.trim() || null })
+      .returning('*');
+    res.status(201).json(novo);
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao cadastrar cliente.' });
   }
 });
 
-// PUT /api/clientes/:id — atualiza um cliente
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const { nome, telefone, email } = req.body;
-
-  if (!nome || !telefone) {
-    return res.status(400).json({ erro: 'Nome e telefone são obrigatórios.' });
-  }
-
+  if (!nome || !telefone) return res.status(400).json({ erro: 'Nome e telefone são obrigatórios.' });
   try {
-    const existe = db.prepare('SELECT id FROM clientes WHERE id = ?').get(req.params.id);
+    const existe = await db('clientes').where({ id: req.params.id }).first();
     if (!existe) return res.status(404).json({ erro: 'Cliente não encontrado.' });
-
-    db.prepare(`
-      UPDATE clientes SET nome = ?, telefone = ?, email = ? WHERE id = ?
-    `).run(nome.trim(), telefone.trim(), email?.trim() || null, req.params.id);
-
-    const clienteAtualizado = db.prepare('SELECT * FROM clientes WHERE id = ?').get(req.params.id);
-    res.json(clienteAtualizado);
+    const [atualizado] = await db('clientes')
+      .where({ id: req.params.id })
+      .update({ nome: nome.trim(), telefone: telefone.trim(), email: email?.trim() || null })
+      .returning('*');
+    res.json(atualizado);
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao atualizar cliente.' });
   }
 });
 
-// DELETE /api/clientes/:id — remove um cliente
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    const existe = db.prepare('SELECT id FROM clientes WHERE id = ?').get(req.params.id);
+    const existe = await db('clientes').where({ id: req.params.id }).first();
     if (!existe) return res.status(404).json({ erro: 'Cliente não encontrado.' });
-
-    db.prepare('DELETE FROM clientes WHERE id = ?').run(req.params.id);
+    await db('clientes').where({ id: req.params.id }).delete();
     res.json({ mensagem: 'Cliente removido com sucesso.' });
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao remover cliente.' });

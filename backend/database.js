@@ -1,61 +1,64 @@
-const Database = require('better-sqlite3');
+require('dotenv').config();
+const knex = require('knex');
 const path = require('path');
 
-const db = new Database(path.join(__dirname, 'agendamento.db'));
+const isProduction = !!process.env.DATABASE_URL;
 
-// Habilita WAL mode para melhor performance
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+const db = knex(isProduction ? {
+  client: 'pg',
+  connection: {
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+  }
+} : {
+  client: 'better-sqlite3',
+  connection: { filename: path.join(__dirname, 'agendamento.db') },
+  useNullAsDefault: true
+});
 
-// Criação das tabelas
-db.exec(`
-  CREATE TABLE IF NOT EXISTS clientes (
-    id        INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome      TEXT    NOT NULL,
-    telefone  TEXT    NOT NULL,
-    email     TEXT,
-    criado_em TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
-  );
+async function initDb() {
+  const hasClientes = await db.schema.hasTable('clientes');
+  if (!hasClientes) {
+    await db.schema.createTable('clientes', t => {
+      t.increments('id');
+      t.string('nome').notNullable();
+      t.string('telefone').notNullable();
+      t.string('email');
+      t.timestamp('criado_em').defaultTo(db.fn.now());
+    });
+  }
 
-  CREATE TABLE IF NOT EXISTS servicos (
-    id               INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome             TEXT    NOT NULL,
-    descricao        TEXT,
-    duracao_minutos  INTEGER NOT NULL,
-    valor            REAL    NOT NULL,
-    criado_em        TEXT    NOT NULL DEFAULT (datetime('now', 'localtime'))
-  );
+  const hasServicos = await db.schema.hasTable('servicos');
+  if (!hasServicos) {
+    await db.schema.createTable('servicos', t => {
+      t.increments('id');
+      t.string('nome').notNullable();
+      t.string('descricao');
+      t.integer('duracao_minutos').notNullable();
+      t.decimal('valor', 10, 2).notNullable();
+      t.timestamp('criado_em').defaultTo(db.fn.now());
+    });
+    await db('servicos').insert([
+      { nome: 'Corte de Cabelo', descricao: 'Corte masculino tradicional', duracao_minutos: 30, valor: 35.00 },
+      { nome: 'Barba',           descricao: 'Aparar e modelar barba',       duracao_minutos: 20, valor: 25.00 },
+      { nome: 'Corte + Barba',   descricao: 'Combo corte e barba',          duracao_minutos: 50, valor: 55.00 },
+    ]);
+  }
 
-  CREATE TABLE IF NOT EXISTS agendamentos (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    cliente_id  INTEGER NOT NULL,
-    servico_id  INTEGER NOT NULL,
-    data_hora   TEXT    NOT NULL,
-    status      TEXT    NOT NULL DEFAULT 'confirmado',
-    observacoes TEXT,
-    criado_em   TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
-    FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE,
-    FOREIGN KEY (servico_id) REFERENCES servicos(id) ON DELETE CASCADE
-  );
-`);
+  const hasAgendamentos = await db.schema.hasTable('agendamentos');
+  if (!hasAgendamentos) {
+    await db.schema.createTable('agendamentos', t => {
+      t.increments('id');
+      t.integer('cliente_id').notNullable().references('id').inTable('clientes').onDelete('CASCADE');
+      t.integer('servico_id').notNullable().references('id').inTable('servicos').onDelete('CASCADE');
+      t.string('data_hora').notNullable();
+      t.string('status').notNullable().defaultTo('confirmado');
+      t.text('observacoes');
+      t.timestamp('criado_em').defaultTo(db.fn.now());
+    });
+  }
 
-// Dados iniciais de exemplo
-const totalServicos = db.prepare('SELECT COUNT(*) as total FROM servicos').get();
-if (totalServicos.total === 0) {
-  db.prepare(`
-    INSERT INTO servicos (nome, descricao, duracao_minutos, valor)
-    VALUES (?, ?, ?, ?)
-  `).run('Corte de Cabelo', 'Corte masculino tradicional', 30, 35.00);
-
-  db.prepare(`
-    INSERT INTO servicos (nome, descricao, duracao_minutos, valor)
-    VALUES (?, ?, ?, ?)
-  `).run('Barba', 'Aparar e modelar barba', 20, 25.00);
-
-  db.prepare(`
-    INSERT INTO servicos (nome, descricao, duracao_minutos, valor)
-    VALUES (?, ?, ?, ?)
-  `).run('Corte + Barba', 'Combo corte e barba', 50, 55.00);
+  console.log(`✅ Banco de dados pronto (${isProduction ? 'PostgreSQL' : 'SQLite'})`);
 }
 
-module.exports = db;
+module.exports = { db, initDb };
