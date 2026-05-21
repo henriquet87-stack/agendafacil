@@ -65,6 +65,9 @@ router.post('/', async (req, res) => {
   if (!cliente_id || !servico_id || !data_hora)
     return res.status(400).json({ erro: 'Cliente, serviço e data/hora são obrigatórios.' });
 
+  if (new Date(data_hora) < new Date())
+    return res.status(400).json({ erro: 'Não é possível agendar em uma data/hora passada.' });
+
   const cliente = await db('clientes').where({ id: cliente_id }).first();
   if (!cliente) return res.status(404).json({ erro: 'Cliente não encontrado.' });
 

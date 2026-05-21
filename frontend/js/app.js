@@ -234,6 +234,12 @@ async function salvarAgendamento() {
     return;
   }
 
+  if (new Date(data_hora) < new Date()) {
+    erroEl.textContent = 'Não é possível agendar em uma data/hora passada.';
+    erroEl.style.display = 'block';
+    return;
+  }
+
   try {
     if (id) {
       await api.atualizarAgendamento(id, { cliente_id, servico_id, data_hora, observacoes });
