@@ -4,17 +4,23 @@ const path = require('path');
 
 const isProduction = !!process.env.DATABASE_URL;
 
-const db = knex(isProduction ? {
-  client: 'pg',
-  connection: {
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
-  }
-} : {
-  client: 'better-sqlite3',
-  connection: { filename: path.join(__dirname, 'agendamento.db') },
-  useNullAsDefault: true
-});
+let db;
+
+if (isProduction) {
+  db = knex({
+    client: 'pg',
+    connection: {
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }
+    }
+  });
+} else {
+  db = knex({
+    client: 'better-sqlite3',
+    connection: { filename: path.join(__dirname, 'agendamento.db') },
+    useNullAsDefault: true
+  });
+}
 
 async function initDb() {
   const hasClientes = await db.schema.hasTable('clientes');
