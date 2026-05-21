@@ -465,5 +465,20 @@ async function deletarServico(id) {
   }
 }
 
+// ===== MÁSCARA DE TELEFONE =====
+function aplicarMascaraTelefone(input) {
+  input.addEventListener('input', () => {
+    let v = input.value.replace(/\D/g, '').slice(0, 11);
+    if (v.length <= 10) {
+      v = v.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    } else {
+      v = v.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+    }
+    input.value = v;
+  });
+}
+
 // ===== INIT =====
 carregarDashboard();
+const telInput = document.getElementById('cl-telefone');
+if (telInput) aplicarMascaraTelefone(telInput);
