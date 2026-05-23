@@ -1,9 +1,15 @@
-<!--
-  SUBSTITUIR apenas o bloco <aside> no index.html.
-  Adicionar o botão .sidebar-toggle e .sidebar-overlay
-  FORA do <aside>, logo após ele.
-  O restante do index.html permanece igual.
--->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgendaFácil — Gerenciamento de Agendamentos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
 
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
@@ -48,3 +54,256 @@
 
   <!-- Overlay escuro para mobile (fecha sidebar ao clicar fora) -->
   <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <!-- ======= DASHBOARD ======= -->
+    <section id="page-dashboard" class="page active">
+      <header class="page-header">
+        <div>
+          <p class="page-eyebrow">Visão Geral</p>
+          <h1 class="page-title">Dashboard</h1>
+        </div>
+        <span id="dash-date" class="dash-date"></span>
+      </header>
+
+      <div class="cards-grid">
+        <div class="stat-card accent">
+          <p class="stat-label">Agendamentos Hoje</p>
+          <p class="stat-value" id="stat-hoje">—</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Total de Clientes</p>
+          <p class="stat-value" id="stat-clientes">—</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Serviços Cadastrados</p>
+          <p class="stat-value" id="stat-servicos">—</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-label">Receita do Dia</p>
+          <p class="stat-value" id="stat-receita">—</p>
+        </div>
+      </div>
+
+      <div class="dash-bottom">
+        <div class="dash-panel">
+          <h2 class="panel-title">Agenda de Hoje</h2>
+          <div id="agenda-hoje" class="agenda-list">
+            <p class="empty-state">Carregando...</p>
+          </div>
+        </div>
+        <div class="dash-panel">
+          <h2 class="panel-title">Ação Rápida</h2>
+          <button class="btn btn-primary full-width" onclick="abrirModalAgendamento()">
+            + Novo Agendamento
+          </button>
+          <button class="btn btn-ghost full-width mt-sm" onclick="irPara('clientes')">
+            + Novo Cliente
+          </button>
+          <button class="btn btn-ghost full-width mt-sm" onclick="irPara('servicos')">
+            + Novo Serviço
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= AGENDAMENTOS ======= -->
+    <section id="page-agendamentos" class="page">
+      <header class="page-header">
+        <div>
+          <p class="page-eyebrow">Gestão de Horários</p>
+          <h1 class="page-title">Agendamentos</h1>
+        </div>
+        <button class="btn btn-primary" onclick="abrirModalAgendamento()">+ Novo</button>
+      </header>
+
+      <div class="filter-bar">
+        <label>
+          Filtrar por data:
+          <input type="date" id="filtro-data" onchange="carregarAgendamentos()" />
+        </label>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('filtro-data').value=''; carregarAgendamentos()">
+          Limpar filtro
+        </button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Data / Hora</th>
+              <th>Cliente</th>
+              <th>Serviço</th>
+              <th>Duração</th>
+              <th>Valor</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-agendamentos">
+            <tr><td colspan="7" class="empty-state">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ======= CLIENTES ======= -->
+    <section id="page-clientes" class="page">
+      <header class="page-header">
+        <div>
+          <p class="page-eyebrow">Cadastro</p>
+          <h1 class="page-title">Clientes</h1>
+        </div>
+        <button class="btn btn-primary" onclick="abrirModalCliente()">+ Novo</button>
+      </header>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Telefone</th>
+              <th>E-mail</th>
+              <th>Cadastrado em</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-clientes">
+            <tr><td colspan="5" class="empty-state">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ======= SERVIÇOS ======= -->
+    <section id="page-servicos" class="page">
+      <header class="page-header">
+        <div>
+          <p class="page-eyebrow">Catálogo</p>
+          <h1 class="page-title">Serviços</h1>
+        </div>
+        <button class="btn btn-primary" onclick="abrirModalServico()">+ Novo</button>
+      </header>
+
+      <div class="servicos-grid" id="servicos-grid">
+        <p class="empty-state">Carregando...</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======= MODAIS ======= -->
+
+  <!-- Modal Agendamento -->
+  <div class="modal-overlay" id="modal-agendamento">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-ag-titulo">Novo Agendamento</h2>
+        <button class="modal-close" onclick="fecharModal('modal-agendamento')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="ag-id" />
+        <div class="form-group">
+          <label>Cliente *</label>
+          <select id="ag-cliente"></select>
+        </div>
+        <div class="form-group">
+          <label>Serviço *</label>
+          <select id="ag-servico" onchange="atualizarInfoServico()"></select>
+        </div>
+        <div class="info-servico" id="info-servico" style="display:none">
+          <span id="info-duracao"></span> · <span id="info-valor"></span>
+        </div>
+        <div class="form-group">
+          <label>Data e Hora *</label>
+          <input type="datetime-local" id="ag-data" />
+        </div>
+        <div class="form-group">
+          <label>Observações</label>
+          <textarea id="ag-obs" rows="2" placeholder="Opcional..."></textarea>
+        </div>
+        <div id="ag-erro" class="form-erro" style="display:none"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="fecharModal('modal-agendamento')">Cancelar</button>
+        <button class="btn btn-primary" onclick="salvarAgendamento()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Cliente -->
+  <div class="modal-overlay" id="modal-cliente">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-cl-titulo">Novo Cliente</h2>
+        <button class="modal-close" onclick="fecharModal('modal-cliente')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="cl-id" />
+        <div class="form-group">
+          <label>Nome *</label>
+          <input type="text" id="cl-nome" placeholder="Nome completo" />
+        </div>
+        <div class="form-group">
+          <label>Telefone *</label>
+          <input type="tel" id="cl-telefone" placeholder="(17) 99999-9999" />
+        </div>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="cl-email" placeholder="opcional@email.com" />
+        </div>
+        <div id="cl-erro" class="form-erro" style="display:none"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="fecharModal('modal-cliente')">Cancelar</button>
+        <button class="btn btn-primary" onclick="salvarCliente()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Serviço -->
+  <div class="modal-overlay" id="modal-servico">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-sv-titulo">Novo Serviço</h2>
+        <button class="modal-close" onclick="fecharModal('modal-servico')">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="sv-id" />
+        <div class="form-group">
+          <label>Nome *</label>
+          <input type="text" id="sv-nome" placeholder="Ex: Corte de Cabelo" />
+        </div>
+        <div class="form-group">
+          <label>Descrição</label>
+          <input type="text" id="sv-desc" placeholder="Opcional" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Duração (min) *</label>
+            <input type="number" id="sv-duracao" min="5" step="5" placeholder="30" />
+          </div>
+          <div class="form-group">
+            <label>Valor (R$) *</label>
+            <input type="number" id="sv-valor" min="0" step="0.01" placeholder="0,00" />
+          </div>
+        </div>
+        <div id="sv-erro" class="form-erro" style="display:none"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="fecharModal('modal-servico')">Cancelar</button>
+        <button class="btn btn-primary" onclick="salvarServico()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast de notificação -->
+  <div id="toast" class="toast"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
