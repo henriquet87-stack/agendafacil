@@ -207,6 +207,25 @@ body {
 
 .btn-sair .nav-icon { font-size: 1.05rem; }
 
+.sidebar-copyright {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 0;
+  max-width: 0;
+  transition: opacity var(--transition), max-width var(--transition);
+}
+
+#sidebar:hover .sidebar-copyright,
+#sidebar.expanded .sidebar-copyright {
+  opacity: 1;
+  max-width: var(--sidebar-expanded);
+}
+
 /* Botão de toggle (aba que sobressai da borda direita da sidebar) */
 .sidebar-toggle {
   position: fixed;
