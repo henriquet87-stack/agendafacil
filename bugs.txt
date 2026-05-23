@@ -1,3 +1,4 @@
 no dashboard não está aparecendo os agendamentos do dia mas sim do dia seguinte *CORRIGIDO*
 agendamento em datas passadas *CORRIGIDO*
 mascara de dígitos no telefone *CORRIGIDO*
+novo conflito de fuso horario em agendamento com horário próximo *CORRIGIDO*

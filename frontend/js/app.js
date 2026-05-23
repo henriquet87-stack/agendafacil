@@ -482,3 +482,53 @@ function aplicarMascaraTelefone(input) {
 carregarDashboard();
 const telInput = document.getElementById('cl-telefone');
 if (telInput) aplicarMascaraTelefone(telInput);
+
+// =============================================
+//  SIDEBAR TOGGLE — adicionar no FINAL de app.js
+// =============================================
+
+(function () {
+  const sidebar  = document.getElementById('sidebar');
+  const toggle   = document.getElementById('sidebar-toggle');
+  const overlay  = document.getElementById('sidebar-overlay');
+
+  // Detecta se é dispositivo touch (sem hover real)
+  const isTouch = !window.matchMedia('(hover: hover)').matches;
+
+  function expandir() {
+    sidebar.classList.add('expanded');
+    overlay.classList.add('visible');
+    toggle.title = 'Recolher menu';
+  }
+
+  function recolher() {
+    sidebar.classList.remove('expanded');
+    overlay.classList.remove('visible');
+    toggle.title = 'Expandir menu';
+  }
+
+  function toggleSidebar() {
+    sidebar.classList.contains('expanded') ? recolher() : expandir();
+  }
+
+  // Botão de toggle (funciona em todos os dispositivos)
+  toggle.addEventListener('click', toggleSidebar);
+
+  // Overlay fecha a sidebar (mobile)
+  overlay.addEventListener('click', recolher);
+
+  // Teclado: Esc fecha a sidebar
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') recolher();
+  });
+
+  // Em desktop com hover: recolhe a classe "expanded" quando o mouse
+  // sai da sidebar, exceto se o usuário clicou para fixar (pinned).
+  // Ao clicar o toggle em desktop, a sidebar fica "pinada" (fica aberta
+  // mesmo sem hover). Clicar de novo desafixia.
+  if (!isTouch) {
+    // No desktop, o hover CSS já controla a expansão visual.
+    // O toggle fixa/desfixa o estado via classe.
+    // Nenhuma lógica extra necessária — CSS cuida do hover.
+  }
+})();
