@@ -1,6 +1,8 @@
-no dashboard não está aparecendo os agendamentos do dia mas sim do dia seguinte *CORRIGIDO*
-agendamento em datas passadas *CORRIGIDO*
-mascara de dígitos no telefone *CORRIGIDO*
+dashboard não está aparecendo os agendamentos do dia mas sim do dia seguinte *CORRIGIDO*
+agendamento em datas passadas (conflito de fuso horario) *CORRIGIDO*
+sem máscara de dígitos no telefone *CORRIGIDO*
 novo conflito de fuso horario em agendamento com horário próximo *CORRIGIDO*
 menu lateral com design não adaptativo à mobile *CORRIGIDO*
 ausência de copyright, adicionado no rodapé da sidebar adaptativa *CORRIGIDO*
+sidebar gerou scroll horizontal em mobile *CORRIGIDO*
+aspecto visual do conteúdo está muito grande 

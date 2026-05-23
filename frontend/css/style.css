@@ -689,19 +689,53 @@ body {
 }
 
 @media (max-width: 680px) {
-  .main { padding: 1.2rem 1rem; }
-  .cards-grid { grid-template-columns: repeat(2, 1fr); }
-  .page-title { font-size: 1.5rem; }
+  /* Layout geral */
+  .main { padding: 1rem .85rem; }
+
+  /* Cabeçalho de página */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .7rem;
+    margin-bottom: 1.2rem;
+  }
+  .page-eyebrow { font-size: .72rem; }
+  .page-title   { font-size: 1.35rem; }
+
+  /* Botões menores */
+  .btn { padding: .5rem .95rem; font-size: .82rem; }
+
+  /* Stat cards: 2x2, mais compactos */
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: .6rem;
+    margin-bottom: 1.2rem;
+  }
+  .stat-card  { padding: .9rem 1rem; }
+  .stat-label { font-size: .7rem; margin-bottom: .3rem; }
+  .stat-value { font-size: 1.55rem; }
+
+  /* Agenda do dashboard */
+  .dash-bottom { gap: .8rem; }
+  .dash-panel  { padding: 1rem; }
+  .agenda-item { padding: .6rem .8rem; gap: .7rem; font-size: .85rem; }
+  .agenda-hora { font-size: .88rem; min-width: 44px; }
 
   /* Em mobile, sidebar expandida cobre a tela → overlay ativo */
   .sidebar.expanded { box-shadow: 6px 0 40px rgba(0,0,0,.7); }
+
+  /* Filter bar */
+  .filter-bar { flex-wrap: wrap; gap: .5rem; }
+
+  /* Tabela: padding reduzido e colunas extras ocultas */
+  .data-table th,
+  .data-table td { padding: .65rem .7rem; font-size: .82rem; }
 
   .data-table th:nth-child(4),
   .data-table td:nth-child(4),
   .data-table th:nth-child(5),
   .data-table td:nth-child(5) { display: none; }
-}
 
-@media (max-width: 420px) {
-  .cards-grid { grid-template-columns: 1fr; }
+  /* Serviços: 1 coluna em mobile */
+  .servicos-grid { grid-template-columns: 1fr; }
 }
