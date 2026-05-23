@@ -603,3 +603,31 @@ body {
   .data-table th:nth-child(5),
   .data-table td:nth-child(5) { display: none; }
 }
+
+/* ─────────────────────────────────────────────────────
+   Adicionar em frontend/css/style.css
+   Botão "Sair" no rodapé da sidebar
+   ───────────────────────────────────────────────────── */
+
+/* Cole isto no FINAL do seu style.css */
+
+.btn-sair {
+  display: block;
+  width: calc(100% - 2rem);
+  margin: auto 1rem 1.2rem;
+  padding: .55rem 1rem;
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,.18);
+  border-radius: 8px;
+  color: rgba(255,255,255,.55);
+  font-size: .8rem;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  text-align: left;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.btn-sair:hover {
+  background: rgba(233,69,96,.15);
+  border-color: #e94560;
+  color: #e94560;
+}
