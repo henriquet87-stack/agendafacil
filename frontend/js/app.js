@@ -102,7 +102,7 @@ async function carregarDashboard() {
     ]);
 
     const confirmados = agendamentos.filter(a => a.status !== 'cancelado');
-    const receita = confirmados.reduce((s, a) => s + a.valor, 0);
+    const receita = confirmados.reduce((s, a) => s + parseFloat(a.valor || 0), 0);
 
     document.getElementById('stat-hoje').textContent    = confirmados.length;
     document.getElementById('stat-clientes').textContent = clientes.length;
