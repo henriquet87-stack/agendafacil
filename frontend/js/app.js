@@ -141,19 +141,19 @@ async function carregarAgendamentos() {
     }
 
     tbody.innerHTML = lista.map(a => `
-      <tr>
-        <td><strong>${fmtData(a.data_hora)}</strong></td>
-        <td>${a.cliente_nome}</td>
-        <td>${a.servico_nome}</td>
-        <td>${a.duracao_minutos} min</td>
-        <td>${fmtValor(a.valor)}</td>
-        <td>${badgeStatus(a.status)}</td>
-        <td>
-          <button class="btn btn-ghost btn-sm" onclick="editarAgendamento(${a.id})">Editar</button>
-          <button class="btn btn-danger btn-sm" onclick="deletarAgendamento(${a.id})">Excluir</button>
-        </td>
-      </tr>
-    `).join('');
+  <tr>
+    <td data-label="Data / Hora"><strong>${fmtData(a.data_hora)}</strong></td>
+    <td data-label="Cliente">${a.cliente_nome}</td>
+    <td data-label="Serviço">${a.servico_nome}</td>
+    <td data-label="Duração">${a.duracao_minutos} min</td>
+    <td data-label="Valor">${fmtValor(a.valor)}</td>
+    <td data-label="Status">${badgeStatus(a.status)}</td>
+    <td data-label="Ações">
+      <button class="btn btn-ghost btn-sm" onclick="editarAgendamento(${a.id})">Editar</button>
+      <button class="btn btn-danger btn-sm" onclick="deletarAgendamento(${a.id})">Excluir</button>
+    </td>
+  </tr>
+`).join('');
   } catch (err) {
     toast('Erro ao carregar agendamentos.', 'erro');
   }
@@ -282,17 +282,17 @@ async function carregarClientes() {
     }
 
     tbody.innerHTML = lista.map(c => `
-      <tr>
-        <td><strong>${c.nome}</strong></td>
-        <td>${c.telefone}</td>
-        <td>${c.email || '—'}</td>
-        <td>${fmtDataCurta(c.criado_em)}</td>
-        <td>
-          <button class="btn btn-ghost btn-sm" onclick="editarCliente(${c.id})">Editar</button>
-          <button class="btn btn-danger btn-sm" onclick="deletarCliente(${c.id})">Excluir</button>
-        </td>
-      </tr>
-    `).join('');
+  <tr>
+    <td data-label="Nome"><strong>${c.nome}</strong></td>
+    <td data-label="Telefone">${c.telefone}</td>
+    <td data-label="E-mail">${c.email || '—'}</td>
+    <td data-label="Cadastro">${fmtDataCurta(c.criado_em)}</td>
+    <td data-label="Ações">
+      <button class="btn btn-ghost btn-sm" onclick="editarCliente(${c.id})">Editar</button>
+      <button class="btn btn-danger btn-sm" onclick="deletarCliente(${c.id})">Excluir</button>
+    </td>
+  </tr>
+`).join('');
   } catch (err) {
     toast('Erro ao carregar clientes.', 'erro');
   }

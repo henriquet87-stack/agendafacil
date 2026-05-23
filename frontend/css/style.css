@@ -727,14 +727,51 @@ body {
   /* Filter bar */
   .filter-bar { flex-wrap: wrap; gap: .5rem; }
 
-  /* Tabela: padding reduzido e colunas extras ocultas */
-  .data-table th,
-  .data-table td { padding: .65rem .7rem; font-size: .82rem; }
+  /* Tabela → cards em mobile */
+  .table-wrap { background: transparent; border: none; border-radius: 0; }
 
-  .data-table th:nth-child(4),
-  .data-table td:nth-child(4),
-  .data-table th:nth-child(5),
-  .data-table td:nth-child(5) { display: none; }
+  .data-table thead { display: none; }
+
+  .data-table tbody tr {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: .7rem;
+    padding: .6rem .9rem;
+  }
+
+  .data-table tbody tr:hover { background: var(--surface); }
+
+  .data-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .45rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: .85rem;
+  }
+
+  .data-table tbody td:last-child { border-bottom: none; }
+
+  .data-table tbody td::before {
+    content: attr(data-label);
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--text-muted);
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-right: 1rem;
+  }
+
+  .data-table tbody td[data-label="Ações"] {
+    justify-content: flex-end;
+    gap: .5rem;
+    padding-top: .6rem;
+  }
+
+  .data-table tbody td[data-label="Ações"]::before { display: none; }
 
   /* Serviços: 1 coluna em mobile */
   .servicos-grid { grid-template-columns: 1fr; }
