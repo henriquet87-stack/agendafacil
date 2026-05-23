@@ -7,7 +7,7 @@ async function verificaConflito(data_hora, servico_id, ignorar_id = null) {
   const servico = await db('servicos').where({ id: servico_id }).first();
   if (!servico) return false;
 
-  const inicio = new Date(data_hora);
+  const inicio = new Date(data_hora + '-03:00');
   const fim = new Date(inicio.getTime() + servico.duracao_minutos * 60000);
 
   let query = db('agendamentos as a')
@@ -20,7 +20,7 @@ async function verificaConflito(data_hora, servico_id, ignorar_id = null) {
   const existentes = await query;
 
   for (const ag of existentes) {
-    const agInicio = new Date(ag.data_hora);
+    const agInicio = new Date(ag.data_hora + '-03:00');
     const agFim = new Date(agInicio.getTime() + ag.duracao_minutos * 60000);
     if (inicio < agFim && fim > agInicio) {
       return { conflito: true, horario: ag.data_hora, duracao: ag.duracao_minutos };
@@ -65,7 +65,8 @@ router.post('/', async (req, res) => {
   if (!cliente_id || !servico_id || !data_hora)
     return res.status(400).json({ erro: 'Cliente, serviço e data/hora são obrigatórios.' });
 
-  if (new Date(data_hora) < new Date())
+  // Interpreta o horário como BRT (UTC-3) antes de comparar com o momento atual (UTC)
+  if (new Date(data_hora + '-03:00') < new Date())
     return res.status(400).json({ erro: 'Não é possível agendar em uma data/hora passada.' });
 
   const cliente = await db('clientes').where({ id: cliente_id }).first();
@@ -101,6 +102,10 @@ router.put('/:id', async (req, res) => {
   try {
     const existe = await db('agendamentos').where({ id: req.params.id }).first();
     if (!existe) return res.status(404).json({ erro: 'Agendamento não encontrado.' });
+
+    // Interpreta o horário como BRT (UTC-3) antes de comparar com o momento atual (UTC)
+    if (new Date(data_hora + '-03:00') < new Date())
+      return res.status(400).json({ erro: 'Não é possível agendar em uma data/hora passada.' });
 
     const conflito = await verificaConflito(data_hora, servico_id, req.params.id);
     if (conflito) {
