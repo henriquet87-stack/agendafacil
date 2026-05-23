@@ -25,6 +25,7 @@ function irPara(page) {
   if (page === 'agendamentos') carregarAgendamentos();
   if (page === 'clientes')     carregarClientes();
   if (page === 'servicos')     carregarServicos();
+  document.getElementById('sidebar').classList.remove('expanded');
 }
 
 // ===== TOAST =====

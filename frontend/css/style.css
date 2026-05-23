@@ -71,6 +71,7 @@ body {
   gap: .55rem;
   padding: .4rem 0 1.6rem 1rem;
   overflow: hidden;
+  text-decoration: none;
 }
 
 .brand-icon {
