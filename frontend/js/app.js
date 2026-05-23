@@ -26,6 +26,8 @@ function irPara(page) {
   if (page === 'clientes')     carregarClientes();
   if (page === 'servicos')     carregarServicos();
   document.getElementById('sidebar').classList.remove('expanded');
+  document.getElementById('sidebar').classList.remove('expanded');
+  document.querySelector('.sidebar-overlay').classList.remove('visible');
 }
 
 // ===== TOAST =====
