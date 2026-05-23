@@ -85,7 +85,7 @@ body {
 
 .sidebar:hover .brand-icon,
 .sidebar.expanded .brand-icon {
-  transform: rotate(-10deg) scale(1.1);
+  transform: rotate(-10deg);
 }
 
 .brand-name {
