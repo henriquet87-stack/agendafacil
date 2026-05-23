@@ -7,6 +7,7 @@ const { initDb } = require('./database');
 const clientesRouter     = require('./routes/clientes');
 const servicosRouter     = require('./routes/servicos');
 const agendamentosRouter = require('./routes/agendamentos');
+const authRouter         = require('./routes/auth');          // ← NOVO
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +19,7 @@ app.use(express.static(path.join(__dirname, '..', 'frontend')));
 app.use('/api/clientes',      clientesRouter);
 app.use('/api/servicos',      servicosRouter);
 app.use('/api/agendamentos',  agendamentosRouter);
+app.use('/api/auth',          authRouter);                    // ← NOVO
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
