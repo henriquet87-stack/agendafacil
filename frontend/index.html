@@ -31,6 +31,11 @@
         <span class="nav-icon">◆</span> Serviços
       </a>
     </nav>
+
+    <!-- ↓ NOVO: botão Sair (só aparece visualmente em produção, mas está sempre no DOM) -->
+    <button class="btn-sair" onclick="Auth.logout()" title="Encerrar sessão">
+      ⎋ Sair
+    </button>
   </aside>
 
   <!-- Main content -->
@@ -280,7 +285,9 @@
   <!-- Toast de notificação -->
   <div id="toast" class="toast"></div>
 
+  <!-- ↓ ORDEM IMPORTA: api.js primeiro (define `API`), auth.js segundo, app.js por último -->
   <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>  <!-- ← NOVO -->
   <script src="js/app.js"></script>
 </body>
 </html>
