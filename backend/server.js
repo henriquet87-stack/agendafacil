@@ -30,6 +30,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ erro: 'Erro interno do servidor.' });
 });
 
+// Keep-alive ping
+app.get('/ping', (req, res) => res.send('ok'));
+
 initDb()
   .then(() => {
     app.listen(PORT, () => {
