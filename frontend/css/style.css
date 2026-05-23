@@ -724,9 +724,6 @@ body {
   /* Em mobile, sidebar expandida cobre a tela → overlay ativo */
   .sidebar.expanded { box-shadow: 6px 0 40px rgba(0,0,0,.7); }
 
-  /* Toggle desce para fora da área de conteúdo */
-  .sidebar-toggle { top: auto; bottom: 5rem; transform: none; }
-
   /* Filter bar */
   .filter-bar { flex-wrap: wrap; gap: .5rem; }
 
@@ -778,4 +775,7 @@ body {
 
   /* Serviços: 1 coluna em mobile */
   .servicos-grid { grid-template-columns: 1fr; }
+
+  /* Toggle desce para fora da área de conteúdo */
+  .sidebar-toggle { top: auto; bottom: 5rem; transform: none; }
 }
