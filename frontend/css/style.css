@@ -777,5 +777,5 @@ body {
   .servicos-grid { grid-template-columns: 1fr; }
 
   /* Toggle desce para fora da área de conteúdo */
-  .sidebar-toggle { top: auto; bottom: 5rem; transform: none; }
+  .sidebar-toggle { top: auto; bottom: 8rem; transform: none; }
 }
