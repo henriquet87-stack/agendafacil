@@ -12,6 +12,13 @@ async function enviarWhatsApp(mensagem) {
   console.log(`📲 CallMeBot: ${res.status}`);
 }
 
+function linkCliente(telefone, nome, servico, data, hora) {
+  const tel  = telefone.replace(/\D/g, '');
+  const fone = tel.startsWith('55') ? tel : '55' + tel;
+  const msg  = `Olá ${nome}! Lembrando do seu agendamento: *${servico}* em *${data} às ${hora}*. Te esperamos! ✂️`;
+  return `https://wa.me/${fone}?text=${encodeURIComponent(msg)}`;
+}
+
 // GET /api/lembretes/processar — chamado pelo cron-job.org a cada 5 min
 router.get('/processar', async (req, res) => {
   try {
@@ -36,10 +43,11 @@ router.get('/processar', async (req, res) => {
 
       const data = ag.data_hora.slice(0, 10).split('-').reverse().join('/');
       const hora = ag.data_hora.slice(11, 16);
+      const link = linkCliente(ag.cliente_telefone, ag.cliente_nome, ag.servico_nome, data, hora);
 
       // Lembrete 60 min antes (janela: 55–65 min)
       if (!ag.lembrete_60_enviado && diffMin >= 55 && diffMin <= 65) {
-        const msg = `⏰ Lembrete 1h!\n👤 ${ag.cliente_nome}\n💈 ${ag.servico_nome}\n📅 ${data} às ${hora}\n📞 ${ag.cliente_telefone}`;
+        const msg = `⏰ Daqui 1h!\n👤 ${ag.cliente_nome}\n💈 ${ag.servico_nome}\n📅 ${data} às ${hora}\n📞 ${ag.cliente_telefone}\n\n👆 Avisar cliente:\n${link}`;
         await enviarWhatsApp(msg);
         await db('agendamentos').where({ id: ag.id }).update({ lembrete_60_enviado: true });
         enviados.push({ id: ag.id, tipo: '60min' });
