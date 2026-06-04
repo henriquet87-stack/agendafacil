@@ -55,7 +55,7 @@ router.get('/processar', async (req, res) => {
 
       // Lembrete 15 min antes (janela: 10–20 min)
       if (!ag.lembrete_15_enviado && diffMin >= 10 && diffMin <= 20) {
-        const msg = `🔔 Próximo cliente em ~15min!\n👤 ${ag.cliente_nome}\n💈 ${ag.servico_nome}\n📅 ${data} às ${hora}\n\n👆 Avisar cliente:\n${link}`;
+        const msg = `🔔 Horário marcado se aproximando!\n👤 ${ag.cliente_nome}\n💈 ${ag.servico_nome}\n📅 ${data} às ${hora}\n\n👆 Avisar cliente:\n${link}`;
         await enviarWhatsApp(msg);
         await db('agendamentos').where({ id: ag.id }).update({ lembrete_15_enviado: true });
         enviados.push({ id: ag.id, tipo: '15min' });
