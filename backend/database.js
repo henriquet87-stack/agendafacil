@@ -12,6 +12,13 @@ if (isProduction) {
     connection: {
       connectionString: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false }
+    },
+    pool: {
+      min: 0,
+      max: 2,
+      acquireTimeoutMillis: 30000,
+      idleTimeoutMillis: 600000,
+      reapIntervalMillis: 1000,
     }
   });
 } else {
@@ -66,7 +73,6 @@ async function initDb() {
       t.timestamp('criado_em').defaultTo(db.fn.now());
     });
   } else {
-    // Migração: adiciona colunas de lembretes se ainda não existirem
     const cols = [
       { name: 'confirmacao_enviada', add: t => t.boolean('confirmacao_enviada').defaultTo(false) },
       { name: 'lembrete_60_enviado', add: t => t.boolean('lembrete_60_enviado').defaultTo(false) },
