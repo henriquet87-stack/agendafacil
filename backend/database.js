@@ -17,7 +17,7 @@ if (isProduction) {
       min: 0,
       max: 2,
       acquireTimeoutMillis: 30000,
-      idleTimeoutMillis: 600000,
+      idleTimeoutMillis: 240000,   // ← era 600000, agora 4 min (< 5 min do Neon),
       reapIntervalMillis: 1000,
     }
   });
