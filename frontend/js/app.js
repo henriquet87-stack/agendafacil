@@ -152,11 +152,11 @@ async function carregarAgendamentos() {
     <td data-label="Valor">${fmtValor(a.valor)}</td>
     <td data-label="Status">${badgeStatus(a.status)}</td>
     <td data-label="Ações">
-      <button class="btn btn-ghost btn-sm" onclick="editarAgendamento(${a.id})">Editar</button>
       <button class="btn btn-ghost btn-sm" onclick="linkAvisarCliente('${a.cliente_telefone}','${a.cliente_nome}','${a.data_hora}','${a.servico_nome}')" title="Avisar cliente pelo WhatsApp">📲</button>
+      <button class="btn btn-ghost btn-sm" onclick="editarAgendamento(${a.id})">Editar</button>
       <button class="btn btn-danger btn-sm" onclick="deletarAgendamento(${a.id})">Excluir</button>
     </td>
-  </tr>
+   </tr>
 `).join('');
   } catch (err) {
     toast('Erro ao carregar agendamentos.', 'erro');
