@@ -60,8 +60,25 @@ async function initDb() {
       t.string('data_hora').notNullable();
       t.string('status').notNullable().defaultTo('confirmado');
       t.text('observacoes');
+      t.boolean('confirmacao_enviada').defaultTo(false);
+      t.boolean('lembrete_60_enviado').defaultTo(false);
+      t.boolean('lembrete_15_enviado').defaultTo(false);
       t.timestamp('criado_em').defaultTo(db.fn.now());
     });
+  } else {
+    // Migração: adiciona colunas de lembretes se ainda não existirem
+    const cols = [
+      { name: 'confirmacao_enviada', add: t => t.boolean('confirmacao_enviada').defaultTo(false) },
+      { name: 'lembrete_60_enviado', add: t => t.boolean('lembrete_60_enviado').defaultTo(false) },
+      { name: 'lembrete_15_enviado', add: t => t.boolean('lembrete_15_enviado').defaultTo(false) },
+    ];
+    for (const col of cols) {
+      const exists = await db.schema.hasColumn('agendamentos', col.name);
+      if (!exists) {
+        await db.schema.alterTable('agendamentos', col.add);
+        console.log(`🔧 Coluna '${col.name}' adicionada à tabela agendamentos`);
+      }
+    }
   }
 
   console.log(`✅ Banco de dados pronto (${isProduction ? 'PostgreSQL' : 'SQLite'})`);

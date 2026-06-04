@@ -153,6 +153,7 @@ async function carregarAgendamentos() {
     <td data-label="Status">${badgeStatus(a.status)}</td>
     <td data-label="Ações">
       <button class="btn btn-ghost btn-sm" onclick="editarAgendamento(${a.id})">Editar</button>
+      <button class="btn btn-ghost btn-sm" onclick="linkAvisarCliente('${a.cliente_telefone}','${a.cliente_nome}','${a.data_hora}','${a.servico_nome}')" title="Avisar cliente pelo WhatsApp">📲</button>
       <button class="btn btn-danger btn-sm" onclick="deletarAgendamento(${a.id})">Excluir</button>
     </td>
   </tr>
@@ -270,6 +271,15 @@ async function deletarAgendamento(id) {
   } catch (err) {
     toast(err.message, 'erro');
   }
+}
+
+function linkAvisarCliente(telefone, nome, data_hora, servico) {
+  const tel  = telefone.replace(/\D/g, '');
+  const fone = tel.startsWith('55') ? tel : '55' + tel;
+  const data = data_hora.slice(0, 10).split('-').reverse().join('/');
+  const hora = data_hora.slice(11, 16);
+  const msg  = `Olá ${nome}! Lembrando do seu agendamento: *${servico}* em *${data} às ${hora}*. Te esperamos! ✂️`;
+  window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
 // ===== CLIENTES =====

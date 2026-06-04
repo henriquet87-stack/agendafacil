@@ -2,6 +2,26 @@ const express = require('express');
 const router = express.Router();
 const { db } = require('../database');
 
+// Envia notificação WhatsApp ao barbeiro via CallMeBot (fire-and-forget)
+async function notificarBarbeiro(agendamento) {
+  const telefone = process.env.BARBEIRO_TELEFONE;
+  const apikey   = process.env.CALLMEBOT_APIKEY;
+  if (!telefone || !apikey) return;
+
+  const data = agendamento.data_hora.slice(0, 10).split('-').reverse().join('/');
+  const hora = agendamento.data_hora.slice(11, 16);
+  const msg  = `✂️ Novo agendamento!\n👤 ${agendamento.cliente_nome}\n💈 ${agendamento.servico_nome}\n📅 ${data} às ${hora}`;
+
+  const url = `https://api.callmebot.com/whatsapp.php?phone=${telefone}&text=${encodeURIComponent(msg)}&apikey=${apikey}`;
+
+  try {
+    const res = await fetch(url);
+    console.log(`📲 CallMeBot: ${res.status}`);
+  } catch (err) {
+    console.error('📲 CallMeBot erro:', err.message);
+  }
+}
+
 // Verifica conflito de horário
 async function verificaConflito(data_hora, servico_id, ignorar_id = null) {
   const servico = await db('servicos').where({ id: servico_id }).first();
@@ -65,7 +85,6 @@ router.post('/', async (req, res) => {
   if (!cliente_id || !servico_id || !data_hora)
     return res.status(400).json({ erro: 'Cliente, serviço e data/hora são obrigatórios.' });
 
-  // Interpreta o horário como BRT (UTC-3) antes de comparar com o momento atual (UTC)
   if (new Date(data_hora + '-03:00') < new Date())
     return res.status(400).json({ erro: 'Não é possível agendar em uma data/hora passada.' });
 
@@ -88,6 +107,10 @@ router.post('/', async (req, res) => {
       .insert({ cliente_id, servico_id, data_hora, observacoes: observacoes?.trim() || null })
       .returning('id');
     const novo = await selectAgendamento(db('agendamentos as a')).where('a.id', id).first();
+
+    // Notifica barbeiro via WhatsApp (fire-and-forget — não bloqueia a resposta)
+    notificarBarbeiro(novo).catch(() => {});
+
     res.status(201).json(novo);
   } catch (err) {
     res.status(500).json({ erro: 'Erro ao criar agendamento.' });
@@ -103,7 +126,6 @@ router.put('/:id', async (req, res) => {
     const existe = await db('agendamentos').where({ id: req.params.id }).first();
     if (!existe) return res.status(404).json({ erro: 'Agendamento não encontrado.' });
 
-    // Interpreta o horário como BRT (UTC-3) antes de comparar com o momento atual (UTC)
     if (new Date(data_hora + '-03:00') < new Date())
       return res.status(400).json({ erro: 'Não é possível agendar em uma data/hora passada.' });
 
