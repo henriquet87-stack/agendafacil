@@ -120,7 +120,6 @@ async function carregarDashboard() {
             <div class="agenda-cliente">${a.cliente_nome}</div>
             <div class="agenda-servico">${a.servico_nome} · ${a.duracao_minutos} min</div>
           </div>
-          ${badgeStatus(a.status)}
           <button class="btn btn-ghost btn-sm" onclick="linkAvisarCliente('${a.cliente_telefone}','${a.cliente_nome}','${a.data_hora}','${a.servico_nome}')" title="Avisar cliente pelo WhatsApp">📲</button>
         </div>
       `).join('');
