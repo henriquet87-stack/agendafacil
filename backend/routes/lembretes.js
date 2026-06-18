@@ -6,10 +6,10 @@ async function enviarWhatsApp(mensagem) {
   const telefone = process.env.BARBEIRO_TELEFONE;
   const apikey   = process.env.CALLMEBOT_APIKEY;
   if (!telefone || !apikey) return;
-
   const url = `https://api.callmebot.com/whatsapp.php?phone=${telefone}&text=${encodeURIComponent(mensagem)}&apikey=${apikey}`;
   const res = await fetch(url);
-  console.log(`📲 CallMeBot: ${res.status}`);
+  const texto = await res.text();
+  console.log(`📲 CallMeBot: ${res.status} — ${texto}`);
 }
 
 function linkCliente(telefone, nome, servico, data, hora) {

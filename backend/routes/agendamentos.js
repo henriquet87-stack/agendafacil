@@ -16,7 +16,8 @@ async function notificarBarbeiro(agendamento) {
 
   try {
     const res = await fetch(url);
-    console.log(`📲 CallMeBot: ${res.status}`);
+    const texto = await res.text();
+    console.log(`📲 CallMeBot: ${res.status} — ${texto}`);
   } catch (err) {
     console.error('📲 CallMeBot erro:', err.message);
   }
