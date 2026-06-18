@@ -1,16 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../database');
-
-async function enviarWhatsApp(mensagem) {
-  const telefone = process.env.BARBEIRO_TELEFONE;
-  const apikey   = process.env.CALLMEBOT_APIKEY;
-  if (!telefone || !apikey) return;
-  const url = `https://api.callmebot.com/whatsapp.php?phone=${telefone}&text=${encodeURIComponent(mensagem)}&apikey=${apikey}`;
-  const res = await fetch(url);
-  const texto = await res.text();
-  console.log(`📲 CallMeBot: ${res.status} — ${texto}`);
-}
+const { enviarWhatsApp } = require('../utils/callmebot');
 
 function linkCliente(telefone, nome, servico, data, hora) {
   const tel  = telefone.replace(/\D/g, '');

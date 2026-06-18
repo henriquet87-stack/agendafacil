@@ -1,26 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../database');
+const { enviarWhatsApp } = require('../utils/callmebot');
 
 // Envia notificação WhatsApp ao barbeiro via CallMeBot (fire-and-forget)
 async function notificarBarbeiro(agendamento) {
-  const telefone = process.env.BARBEIRO_TELEFONE;
-  const apikey   = process.env.CALLMEBOT_APIKEY;
-  if (!telefone || !apikey) return;
-
   const data = agendamento.data_hora.slice(0, 10).split('-').reverse().join('/');
   const hora = agendamento.data_hora.slice(11, 16);
   const msg  = `✂️ Novo agendamento!\n👤 ${agendamento.cliente_nome}\n💈 ${agendamento.servico_nome}\n📅 ${data} às ${hora}`;
-
-  const url = `https://api.callmebot.com/whatsapp.php?phone=${telefone}&text=${encodeURIComponent(msg)}&apikey=${apikey}`;
-
-  try {
-    const res = await fetch(url);
-    const texto = await res.text();
-    console.log(`📲 CallMeBot: ${res.status} — ${texto}`);
-  } catch (err) {
-    console.error('📲 CallMeBot erro:', err.message);
-  }
+  await enviarWhatsApp(msg);
 }
 
 // Verifica conflito de horário
