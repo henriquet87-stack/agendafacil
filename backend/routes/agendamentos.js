@@ -2,15 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { db } = require('../database');
 const { enviarWhatsApp } = require('../utils/callmebot');
-const novo = await selectAgendamento(db('agendamentos as a')).where('a.id', id).first();
-
-// Só notifica se o agendamento for com mais de 20 min de antecedência
-const diffMin = (new Date(novo.data_hora + '-03:00') - new Date()) / 60000;
-if (diffMin > 20) {
-  notificarBarbeiro(novo).catch(() => {});
-}
-
-res.status(201).json(novo);
 
 // Envia notificação WhatsApp ao barbeiro via CallMeBot (fire-and-forget)
 async function notificarBarbeiro(agendamento) {
@@ -106,7 +97,7 @@ router.post('/', async (req, res) => {
       .returning('id');
     const novo = await selectAgendamento(db('agendamentos as a')).where('a.id', id).first();
 
-// Só notifica se agendamento for com mais de 20 min de antecedência
+    // Só notifica se agendamento for com mais de 20 min de antecedência
     const diffMin = (new Date(novo.data_hora + '-03:00') - new Date()) / 60000;
     if (diffMin > 20) {
       notificarBarbeiro(novo).catch(() => {});
