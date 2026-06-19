@@ -1,5 +1,4 @@
-// Envio centralizado ao CallMeBot com proteção contra bloqueio por excesso de requisições
-const MIN_INTERVALO_MS = 20000; // 20 segundos entre envios
+const MIN_INTERVALO_MS = 20000;
 let ultimoEnvio = 0;
 
 async function enviarWhatsApp(mensagem) {
@@ -14,7 +13,7 @@ async function enviarWhatsApp(mensagem) {
   }
   ultimoEnvio = Date.now();
 
-  const url = `https://api.callmebot.com/whatsapp.php?phone=${telefone}&text=${encodeURIComponent(mensagem)}&apikey=${apikey}`;
+  const url = `https://callmebot-proxy.henriquet87.workers.dev/?phone=${telefone}&text=${mensagem}&apikey=${apikey}`;
 
   try {
     const res = await fetch(url);
