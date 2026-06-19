@@ -13,7 +13,7 @@ async function enviarWhatsApp(mensagem) {
   }
   ultimoEnvio = Date.now();
 
-  const url = `https://callmebot-proxy.henriquet87.workers.dev/?phone=${telefone}&text=${mensagem}&apikey=${apikey}`;
+  const url = `https://callmebot-proxy.henriquet87.workers.dev/?phone=${telefone}&text=${encodeURIComponent(mensagem)}&apikey=${apikey}`;
 
   try {
     const res = await fetch(url);
