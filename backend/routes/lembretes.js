@@ -14,7 +14,6 @@ function linkCliente(telefone, nome, servico, data, hora) {
 router.get('/processar', async (req, res) => {
   try {
     const agora = new Date();
-
     const agendamentos = await db('agendamentos as a')
       .join('clientes as c', 'a.cliente_id', 'c.id')
       .join('servicos as s', 'a.servico_id', 's.id')
@@ -31,23 +30,24 @@ router.get('/processar', async (req, res) => {
     for (const ag of agendamentos) {
       const inicio  = new Date(ag.data_hora + '-03:00');
       const diffMin = (inicio - agora) / 60000;
-
       const data = ag.data_hora.slice(0, 10).split('-').reverse().join('/');
       const hora = ag.data_hora.slice(11, 16);
       const link = linkCliente(ag.cliente_telefone, ag.cliente_nome, ag.servico_nome, data, hora);
 
       // Lembrete 60 min antes (janela: 55–65 min)
       if (!ag.lembrete_60_enviado && diffMin >= 55 && diffMin <= 65) {
-        const msg = `⏰ Daqui 1h!\n👤 ${ag.cliente_nome}\n💈 ${ag.servico_nome}\n📅 ${data} às ${hora}\n📞 ${ag.cliente_telefone}\n\n👆 Avisar cliente:\n${link}`;
+        const msg = `⏰ Daqui 1h!\n👤 ${ag.cliente_nome}\n💈 ${ag.servico_nome}\n📅 ${data} às ${hora}\n📞 ${ag.cliente_telefone}`;
         await enviarWhatsApp(msg);
+        await enviarWhatsApp(link);
         await db('agendamentos').where({ id: ag.id }).update({ lembrete_60_enviado: true });
         enviados.push({ id: ag.id, tipo: '60min' });
       }
 
       // Lembrete 15 min antes (janela: 10–20 min)
       if (!ag.lembrete_15_enviado && diffMin >= 10 && diffMin <= 20) {
-        const msg = `🔔 Horário marcado se aproximando!\n👤 ${ag.cliente_nome}\n💈 ${ag.servico_nome}\n📅 ${data} às ${hora}\n\n👆 Avisar cliente:\n${link}`;
+        const msg = `🔔 Daqui 15min!\n👤 ${ag.cliente_nome}\n💈 ${ag.servico_nome}\n📅 ${data} às ${hora}\n📞 ${ag.cliente_telefone}`;
         await enviarWhatsApp(msg);
+        await enviarWhatsApp(link);
         await db('agendamentos').where({ id: ag.id }).update({ lembrete_15_enviado: true });
         enviados.push({ id: ag.id, tipo: '15min' });
       }
