@@ -10,6 +10,16 @@ function linkCliente(telefone, nome, servico, data, hora) {
   return `https://wa.me/${fone}?text=${encodeURIComponent(msg)}`;
 }
 
+async function encurtarUrl(url) {
+  try {
+    const res = await fetch(`https://tinyurl.com/api-create.php?url=${encodeURIComponent(url)}`);
+    if (res.ok) return await res.text();
+  } catch (err) {
+    console.error('TinyURL erro:', err.message);
+  }
+  return null;
+}
+
 // GET /api/lembretes/processar — chamado pelo cron-job.org a cada 5 min
 router.get('/processar', async (req, res) => {
   try {
@@ -38,7 +48,8 @@ router.get('/processar', async (req, res) => {
       if (!ag.lembrete_60_enviado && diffMin >= 55 && diffMin <= 65) {
         const msg = `⏰ Daqui 1h!\n👤 ${ag.cliente_nome}\n💈 ${ag.servico_nome}\n📅 ${data} às ${hora}\n📞 ${ag.cliente_telefone}`;
         await enviarWhatsApp(msg);
-        await enviarWhatsApp(link);
+        const linkCurto = await encurtarUrl(link);
+        if (linkCurto) await enviarWhatsApp(`👆 Avisar cliente:\n${linkCurto}`);
         await db('agendamentos').where({ id: ag.id }).update({ lembrete_60_enviado: true });
         enviados.push({ id: ag.id, tipo: '60min' });
       }
@@ -47,7 +58,8 @@ router.get('/processar', async (req, res) => {
       if (!ag.lembrete_15_enviado && diffMin >= 10 && diffMin <= 20) {
         const msg = `🔔 Daqui 15min!\n👤 ${ag.cliente_nome}\n💈 ${ag.servico_nome}\n📅 ${data} às ${hora}\n📞 ${ag.cliente_telefone}`;
         await enviarWhatsApp(msg);
-        await enviarWhatsApp(link);
+        const linkCurto = await encurtarUrl(link);
+        if (linkCurto) await enviarWhatsApp(`👆 Avisar cliente:\n${linkCurto}`);
         await db('agendamentos').where({ id: ag.id }).update({ lembrete_15_enviado: true });
         enviados.push({ id: ag.id, tipo: '15min' });
       }
